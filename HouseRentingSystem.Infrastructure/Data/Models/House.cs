@@ -33,6 +33,7 @@ namespace HouseRentingSystem.Infrastructure.Data.Models
 
         [Comment("House rent")]
         [Required]
+        [Precision(18, 2)]
         public decimal PricePerMonth { get; set; }
 
         [Required]
