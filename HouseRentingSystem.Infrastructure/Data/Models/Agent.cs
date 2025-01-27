@@ -24,5 +24,7 @@ namespace HouseRentingSystem.Infrastructure.Data.Models
 
         [ForeignKey(nameof(UserId))]
         public IdentityUser User { get; set; } = null!;
+
+        public IEnumerable<House> Houses { get; set; } = new List<House>();
     }
 }
