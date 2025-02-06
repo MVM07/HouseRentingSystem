@@ -1,4 +1,7 @@
-﻿using HouseRentingSystem.Infrastructure.Data;
+﻿using HouseRentingSystem.Core.Contracts.House;
+using HouseRentingSystem.Core.Services.House;
+using HouseRentingSystem.Infrastructure.Data;
+using HouseRentingSystem.Infrastructure.Data.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +11,8 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
+            services.AddScoped<IHouseService, HouseService>();
+
             return services;
         }
 
@@ -17,6 +22,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
+
+            services.AddScoped<IRepository, Repository>();
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
