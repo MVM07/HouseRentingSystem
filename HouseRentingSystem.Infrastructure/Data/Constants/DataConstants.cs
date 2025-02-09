@@ -19,7 +19,7 @@
         public const int HouseDescriptionMinLength = 50;
         public const int HouseDescriptionMaxLength = 500;
 
-        public const string HouseRentMinValue = "0.00m";
-        public const string HouseRentMaxValue = "2000.00m";
+        public const string HouseRentMinValue = "0.00";
+        public const string HouseRentMaxValue = "2000.00";
     }
 }
