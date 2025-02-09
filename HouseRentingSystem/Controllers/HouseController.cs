@@ -1,18 +1,35 @@
-﻿using HouseRentingSystem.Core.Models.House;
+﻿using HouseRentingSystem.Attributes;
+using HouseRentingSystem.Core.Contracts;
+using HouseRentingSystem.Core.Models.House;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HouseRentingSystem.Controllers
 {    
     public class HouseController : BaseController
     {
+        private readonly IHouseService houseService;
+        private readonly IAgentService agentService;
+
+        public HouseController(IHouseService _houseService,
+            IAgentService _agentService)
+        {
+            houseService = _houseService;
+            agentService = _agentService;
+        }
+
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> All()
+        public async Task<IActionResult> All([FromQuery]AllHousesQueryModel query)
         {
-            var model = new AllHousesQueryModel();
+            var model = await houseService.AllAsync(query.Category, query.SearchTerm, query.Sorting, query.CurrentPage, query.HousesPerPage);
 
-            return View(model);
+            query.TotalHousesCount = model.TotalHousesCount;
+            query.Houses = model.Houses;
+            query.Categories = await houseService.AllCategoriesNamesAsync();
+
+            return View(query);
         }
 
         [HttpGet]
@@ -31,16 +48,39 @@ namespace HouseRentingSystem.Controllers
             return View(model);
         }
 
+        [MustBeAgent]
         [HttpGet]
-        public IActionResult Add()
+        public async Task<IActionResult> Add()
         {
-            return View();
+            var model = new HouseFormModel()
+            {
+                Categories = await houseService.AllCategoriesAsync()
+            };
+
+            return View(model);
         }
 
+        [MustBeAgent]
         [HttpPost]
         public async Task<IActionResult> Add(HouseFormModel model)
         {
-            return RedirectToAction(nameof(Details), new {id = 1});
+            if (await houseService.CategoryExistsAsync(model.CategoryId) == false)
+            {
+                ModelState.AddModelError(nameof(model.CategoryId), "");
+            }
+
+            if (ModelState.IsValid == false)
+            {
+                model.Categories = await houseService.AllCategoriesAsync();
+
+                return View(model);
+            }
+
+            int? agentId = await agentService.GetAgentIdAsync(User.Id());
+
+            int newHouseId = await houseService.CreateAsync(model, agentId ?? 0);
+
+            return RedirectToAction(nameof(Details), new { id = newHouseId });
         }
 
         [HttpGet]
