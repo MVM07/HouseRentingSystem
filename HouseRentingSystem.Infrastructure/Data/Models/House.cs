@@ -50,5 +50,8 @@ namespace HouseRentingSystem.Infrastructure.Data.Models
 
         [Comment("User Id of the renter")]
         public string? RenterId { get; set; } = string.Empty;
+
+        [Comment("Is house approved by admin.")]
+        public bool IsApproved { get; set; }
     }
 }

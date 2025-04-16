@@ -10,7 +10,8 @@ namespace HouseRentingSystem.Infrastructure.Data.SeedDb
         {
             var data = new SeedData();
 
-            builder.HasData(new Agent[] { data.Agent });
+            builder.HasData(new Agent[] { data.Agent, data.AdminAgent });
         }
     }
 }
+
